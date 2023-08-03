@@ -1,0 +1,142 @@
+{
+  "name": "anomalous_number_of_frontend_4xx_http_responses_for_host",
+  "description": "This incident type involves an anomalous number of frontend 4xx HTTP responses for a particular host. This may indicate a problem with the HAProxy, which is a load balancer often used in web architectures. It can result in service disruptions and should be investigated promptly.",
+  "params": [
+    {
+      "name": "HOST",
+      "value": ""
+    },
+    {
+      "name": "DESIRED_BUFFER_SIZE",
+      "value": ""
+    },
+    {
+      "name": "LIST_OF_BACKEND_SERVERS",
+      "value": ""
+    },
+    {
+      "name": "DESIRED_TIMEOUT_VALUE",
+      "value": ""
+    },
+    {
+      "name": "BACKEND_IP",
+      "value": ""
+    },
+    {
+      "name": "HAPROXY_FRONTEND_IP",
+      "value": ""
+    },
+    {
+      "name": "HAPROXY_CFG",
+      "value": ""
+    },
+    {
+      "name": "BACKEND_SERVER",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Anomalous number of frontend 4xx HTTP responses for host\nThis incident type involves an anomalous number of frontend 4xx HTTP responses for a particular host. This may indicate a problem with the HAProxy, which is a load balancer often used in web architectures. It can result in service disruptions and should be investigated promptly."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the HAProxy configuration file for any errors or typos"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo haproxy -c -f ${HAPROXY_CFG}`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the log files for any errors or issues"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo tail -f /var/log/haproxy.log`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the status of the HAProxy service"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo systemctl status haproxy`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the network connectivity for the affected host"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `ping ${HOST}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the HTTP response code for the affected host"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -I ${HOST}`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Network or connectivity issues between the HAProxy and backend servers"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_backend_server_check($LIST_OF_BACKEND_SERVERS, $BACKEND_SERVER)"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Restart the HAProxy service."
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_restart_haproxy()"
+    }
+  ]
+}
